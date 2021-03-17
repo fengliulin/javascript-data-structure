@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //封装集合类
+    function Set() {
+        //属性
+        this.items = {}
+
+        //方法
+        Set.prototype.add = function (value) {
+            //判断当前集合中是否已经包含该元素
+            // if (this.has(value)) return false
+
+            //将元素添加到集合中
+            this.items[value] = value  //往对象添加
+            return true
+        }
+
+        //has方法
+        Set.prototype.has = function (value) {
+            return this.items.hasOwnProperty(value)
+        }
+
+        //remove方法
+        Set.prototype.remove = function (value) {
+            //1、判断该集合中是否包含该元素
+            if (!this.has(value)) {
+                return false
+            }
+
+            //2、将元素从属性中删除
+            delete this.items[value]
+            return true
+        }
+
+        //clear方法
+        Set.prototype.clear = function () {
+            this.items = {}
+        }
+
+        //size方法
+        Set.prototype.size = function () {
+            return Object.keys(this.items).length
+        }
+
+        //获取集合中所有的值
+        Set.prototype.values = function () {
+            return Object.keys(this.items)
+        }
+
+        //集合间的操作
+        //并集
+        Set.prototype.union = function (otherSet) {
+            //this:集合A
+            //otherSet:集合B
+            //1、创建新的集合
+            let unionSet = new Set()
+
+            //2、将A集合中所有的元素添加到新集合中
+            let values = this.values() //本类方法
+            for (let i = 0; i < values.length; i++) {
+                unionSet.add(values[i])
+            }
+
+            //3、取出B集合中的元素，判断是否需要添加新集合
+            values = otherSet.values()
+            for (let i = 0; i < values.length; i++) {
+                unionSet.add(values[i])
+            }
+
+            return unionSet
+        }
+
+        //交集intersection
+        Set.prototype.intersection = function (otherSet) {
+            //this:集合A
+            //otherSet:集合B
+            //1、创建新的集合
+            let intersectionSet = new Set()
+
+            //2、从当前元素中取出一个一个元素，判断是否同时存在于集合B中，存在放入新的集合
+            let values = this.values()
+            for (let i = 0; i < values.length; i++) {
+                let item = values[i]
+                if (otherSet.has(item)) {
+                    intersectionSet.add(item)
+                }
+            }
+            return intersectionSet
+        }
+
+        //差集subtraction
+        Set.prototype.subtraction = function (otherSet) {
+            //this:集合A
+            //otherSet:集合B
+            //1、创建新的集合
+            let subtractionSet = new Set()
+
+            //2、从当前元素中取出一个一个元素，判断不存在于集合B中，则放入新的集合
+            let values = this.values()
+            for (let i = 0; i < values.length; i++) {
+                let item = values[i]
+                if (!otherSet.has(item)) {
+                    subtractionSet.add(item)
+                }
+            }
+            return subtractionSet
+        }
+
+        //子集subtraction
+        Set.prototype.subset = function (otherSet) {
+            //this:集合A
+            //otherSet:集合B
+
+            //遍历集合A中的所有元素，如果发现，集合A中的元素，在集合B中不存在，就是false
+            //如果遍历完整个元素，依然没有返回false，那么返回true即可
+            let values = this.values()
+            for (let i = 0; i < values.length; i++) {
+                let item = values[i]
+                if (!otherSet.has(item)) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
+
+    //测试Set类
+    let set1 = new Set()
+    set1.add("1")
+    set1.add("2")
+    set1.add("3")
+    let set2 = new Set()
+    set2.add("3")
+    set2.add("4")
+    set2.add("5")
+
+    // 请两个集合的交集
+    let set3 = set1.union(set2);
+    console.log(set3);
+
+    // 请两个集合的交集
+    let set4 = set1.intersection(set2);
+    console.log(set4);
+
+    // 请两个集合的差集
+    let set5 = set1.subtraction(set2);
+    console.log(set5);
+
+
+    //测试子集
+    //测试Set类
+    let set11 = new Set()
+    set11.add("1")
+    set11.add("2")
+    set11.add("3")
+    let set12 = new Set()
+    set12.add("3")
+    set12.add("4")
+    set12.add("5")
+
+
+    console.log(set11.subset(set12))
+
+</script>
+</body>
+</html>

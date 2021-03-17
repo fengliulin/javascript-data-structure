@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function ArrayList() {
+        this.array = []
+
+        ArrayList.prototype.insert = function (item) {
+            this.array.push(item)
+        }
+
+        ArrayList.prototype.toString = function () {
+            return this.array.join("-")
+        }
+
+        //实现排序算法
+        //冒泡排序
+        ArrayList.prototype.bubbleSort = function () {
+            //1、获取数组的长度
+            let length = this.array.length
+
+            //
+            for (let i = length; i >= 0; i--) {
+                for (let j = 0; j < length - 1; j++) {  //最大的会放到最后
+                    if (this.array[j] > this.array[j + 1]) {
+                        // 交换两个数据
+                        let temp = this.array[j]
+                        this.array[j] = this.array[j + 1]
+                        this.array[j + 1] = temp
+                    }
+                }
+            }
+        }
+    }
+
+    //测试类
+    let list = new ArrayList()
+    list.insert(66)
+    list.insert(88)
+    list.insert(12)
+    list.insert(87)
+    list.insert(100)
+    list.insert(569)
+    list.insert(5691)
+    list.insert(5692)
+    list.insert(5693)
+    list.insert(570)
+    list.insert(23)
+    list.bubbleSort()
+    console.log(list.toString())
+</script>
+</body>
+</html>

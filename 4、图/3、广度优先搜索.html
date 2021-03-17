@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="dict.js"></script>
+    <script src="queue.js"></script>
+</head>
+<body>
+<script>
+    //封装图结构
+    function Graph() {
+        //属性：顶点（数组） / 边（字典）
+        this.vertexes = [] //顶点
+        this.edges = new Dictionary() //边
+
+        //1、添加顶点方法
+        Graph.prototype.addVertex = function (v) {
+            this.vertexes.push(v)
+            this.edges.set(v, [])
+        }
+
+        //2、添加边的方法
+        Graph.prototype.addEdge = function (v1, v2) {
+            this.edges.get(v1).push(v2)  //无向图
+            this.edges.get(v2).push(v1)  //有向图
+        }
+
+        //3、toString
+        Graph.prototype.toString = function (v1, v2) {
+            let resultString = ""
+
+            //遍历所有的顶点，以及顶点对应的边
+            for (let i = 0; i < this.vertexes.length; i++) { //遍历顶点存储的数组
+                resultString += this.vertexes[i] + " -> "
+
+                let vEdges = this.edges.get(this.vertexes[i])
+                for (let j = 0; j < vEdges.length; j++) { //遍历字典存储的对应顶点的值
+                    resultString += vEdges[j] + " "
+                }
+
+                resultString += "\n"
+            }
+
+            return resultString
+        }
+
+        //初始化状态颜色
+        Graph.prototype.initializeColor = function () {
+            let colors = {}
+            for (let i = 0; i < this.vertexes.length; i++) {
+                colors[this.vertexes[i]] = "white";
+            }
+            return colors
+        }
+
+        /**
+         * 白色：顶点没有被访问
+         * 灰色：顶点被访问过，但并没有被搜索过
+         * 黑色：顶点被访问过，并且被完全搜索过
+         */
+        //实现广度优先搜索(BFS)
+        Graph.prototype.bfs = function (initV, handler) {
+            //1、初始化颜色
+            let color = this.initializeColor()
+
+            //2、创建队列
+            let queue = new Queue()
+
+            //3、将顶点加入到队列中
+            queue.enqueue(initV)
+
+            //4、循环从队列中取出元素
+            while (!queue.isEmpty()) {
+                //4.1 从队列取出一个顶点
+                let v = queue.dequeue()
+
+                //4.2 获取和顶点相连的另外顶点
+                let vList = this.edges.get(v)
+
+                //4.3 将v的颜色设置成灰色
+                color[v] = "gray"
+
+                //4.4 遍历所有的顶点，并且加入到队列中
+                for (let i = 0; i < vList.length; i++) {
+                    let e = vList[i]
+                    if (color[e] === "white") {
+                        color[e] = "gray"
+                        queue.enqueue(e)
+                    }
+                }
+
+                //4.5 访问顶点
+                handler(v)
+
+                //4.6 将顶点设置为黑色
+                color[v] = "black"
+
+            }
+        }
+    }
+
+    //测试代码
+    let g = new Graph()
+
+    //2、添加顶点
+    let myVertexes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    for (let i = 0; i < myVertexes.length; i++) {
+        g.addVertex(myVertexes[i])
+    }
+
+    //3、添加边
+    g.addEdge("A","B")
+    g.addEdge("A","C")
+    g.addEdge("A","D")
+    g.addEdge("C","D")
+    g.addEdge("C","G")
+    g.addEdge("D","G")
+    g.addEdge("D","H")
+    g.addEdge("B","E")
+    g.addEdge("B","F")
+    g.addEdge("E","I")
+
+    console.log(g.toString())
+
+    g.initializeColor()
+
+    //测试广度优先搜索
+    let result = ""
+    g.bfs(g.vertexes[0], function (v) {
+        result += v + " "
+    })
+    console.log(result)
+
+</script>
+</body>
+</html>

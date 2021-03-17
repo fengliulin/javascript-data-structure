@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="dict.js"></script>
+    <script src="queue.js"></script>
+</head>
+<body>
+<script>
+    //封装图结构
+    function Graph() {
+        //属性：顶点（数组） / 边（字典）
+        this.vertexes = [] //顶点
+        this.edges = new Dictionary() //边
+
+        //1、添加顶点方法
+        Graph.prototype.addVertex = function (v) {
+            this.vertexes.push(v)
+            this.edges.set(v, [])
+        }
+
+        //2、添加边的方法
+        Graph.prototype.addEdge = function (v1, v2) {
+            this.edges.get(v1).push(v2)  //无向图
+            this.edges.get(v2).push(v1)  //有向图
+        }
+
+        //3、toString
+        Graph.prototype.toString = function (v1, v2) {
+            let resultString = ""
+
+            //遍历所有的顶点，以及顶点对应的边
+            for (let i = 0; i < this.vertexes.length; i++) { //遍历顶点存储的数组
+                resultString += this.vertexes[i] + " -> "
+
+                let vEdges = this.edges.get(this.vertexes[i])
+                for (let j = 0; j < vEdges.length; j++) { //遍历字典存储的对应顶点的值
+                    resultString += vEdges[j] + " "
+                }
+
+                resultString += "\n"
+            }
+
+            return resultString
+        }
+
+        //初始化状态颜色
+        Graph.prototype.initializeColor = function () {
+            let colors = {}
+            for (let i = 0; i < this.vertexes.length; i++) {
+                colors[this.vertexes[i]] = "while";
+            }
+            return colors
+        }
+    }
+
+    //测试代码
+    let g = new Graph()
+
+    //2、添加顶点
+    let myVertexes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    for (let i = 0; i < myVertexes.length; i++) {
+        g.addVertex(myVertexes[i])
+    }
+
+    //3、添加边
+    g.addEdge("A","B")
+    g.addEdge("A","C")
+    g.addEdge("A","D")
+    g.addEdge("C","D")
+    g.addEdge("C","G")
+    g.addEdge("D","G")
+    g.addEdge("D","H")
+    g.addEdge("B","E")
+    g.addEdge("B","F")
+    g.addEdge("E","I")
+
+    console.log(g.toString())
+
+    g.initializeColor()
+
+</script>
+</body>
+</html>

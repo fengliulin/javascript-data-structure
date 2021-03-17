@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function BinarySerachTree() {
+        //内部类，节点
+        function Node(key) {
+            this.left = null
+            this.key = key
+            this.right =null
+        }
+
+        //属性
+        this.root = null
+
+        //插入数据
+        BinarySerachTree.prototype.insert = function (key) {
+            //1、根据我们的key创建节点
+            let newNode = new Node(key)
+
+            //2、判断根节点是否有值
+            if (this.root == null) {
+                this.root = newNode
+            } else {
+                this.insertNode(this.root, newNode)
+            }
+        }
+
+        //比较大小， 左边小， 右边大
+        BinarySerachTree.prototype.insertNode = function (node, newNode) {
+            if (newNode.key < node.key) {  //向左查找
+                if (node.left == null) {
+                    node.left = newNode
+                } else {
+                    this.insertNode(node.left, newNode)
+                }
+            } else {//向右查找
+                if (node.right == null) {
+                    node.right = newNode
+                } else {
+                    this.insertNode(node.right, newNode)
+                }
+            }
+        }
+
+        //后序遍历
+        BinarySerachTree.prototype.postOrderTraversal = function (handlerCallBack) {
+            this.postOrderTraversalNode(this.root, handlerCallBack)
+        }
+
+        BinarySerachTree.prototype.postOrderTraversalNode = function (node, handlerCallBack) {
+            if (node != null) {
+                //1、处理左子节点
+                this.postOrderTraversalNode(node.left, handlerCallBack)
+
+                //2、处理右子节点
+                this.postOrderTraversalNode(node.right, handlerCallBack)
+
+                //3、处理经过的节点
+                handlerCallBack(node.key)
+            }
+        }
+    }
+
+    let bt = new BinarySerachTree();
+    bt.insert(11)
+    bt.insert(7)
+    bt.insert(15)
+    bt.insert(5)
+    bt.insert(9)
+    bt.insert(13)
+    bt.insert(20)
+    bt.insert(3)
+    bt.insert(6)
+    bt.insert(8)
+    bt.insert(10)
+    bt.insert(12)
+    bt.insert(14)
+    bt.insert(18)
+    bt.insert(25)
+    console.log(bt)
+
+    let resultString = ""
+    bt.postOrderTraversal((key) => {
+        resultString += key + " "
+    })
+
+    console.log(resultString)
+</script>
+</body>
+</html>

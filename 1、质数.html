@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //封装函数：判断传入的数组是否是质数
+    //只能被1和自己能整出的数， 不能被2到num-1之间的数整出
+    function isPrime(num) {
+        for (let i = 2; i < num; i++) {
+            if (num % i === 0) {
+                return false
+            }
+        }
+        return true
+    }
+
+    //更高效的质数判断
+    function isPrimeSqrt(num) {
+        let temp = parseInt(Math.sqrt(num));
+        for (let i = 2; i < temp; i++) {
+            if (temp % i === 0) {
+                return false
+            }
+        }
+        return true
+    }
+
+    console.log(isPrimeSqrt(100))
+    console.log(Math.sqrt(3))
+
+
+
+
+    //100以内的质数
+    function to100Prime(num) {
+        for (let i = 2; i <= 100; i++) {
+            let flag = true
+            for (let j = 2; j < i; j++) {
+                if (i % j === 0) {
+                    flag = false
+                    break
+                }
+            }
+            if (flag){
+                console.log("质数:" + i)
+            }
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

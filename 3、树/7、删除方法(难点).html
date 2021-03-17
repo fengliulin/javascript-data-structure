@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function BinarySerachTree() {
+        //内部类，节点
+        function Node(key) {
+            this.left = null
+            this.key = key
+            this.right =null
+        }
+
+        //属性
+        this.root = null
+
+        //插入数据
+        BinarySerachTree.prototype.insert = function (key) {
+            //1、根据我们的key创建节点
+            let newNode = new Node(key)
+
+            //2、判断根节点是否有值
+            if (this.root == null) {
+                this.root = newNode
+            } else {
+                this.insertNode(this.root, newNode)
+            }
+        }
+
+        //递归查找比较大小， 左边小， 右边大， 找到【空位置】新节点插入
+        BinarySerachTree.prototype.insertNode = function (node, newNode) {
+            if (newNode.key < node.key) {  //向左查找
+                if (node.left == null) {
+                    node.left = newNode
+                } else {
+                    this.insertNode(node.left, newNode)
+                }
+            } else {//向右查找
+                if (node.right == null) {
+                    node.right = newNode
+                } else {
+                    this.insertNode(node.right, newNode)
+                }
+            }
+        }
+
+        //后序遍历
+        BinarySerachTree.prototype.postOrderTraversal = function (handlerCallBack) {
+            this.postOrderTraversalNode(this.root, handlerCallBack)
+        }
+
+        BinarySerachTree.prototype.postOrderTraversalNode = function (node, handlerCallBack) {
+            if (node != null) {
+                //1、处理左子节点
+                this.postOrderTraversalNode(node.left, handlerCallBack)
+
+                //2、处理右子节点
+                this.postOrderTraversalNode(node.right, handlerCallBack)
+
+                //3、处理经过的节点
+                handlerCallBack(node.key)
+            }
+        }
+
+        //删除节点
+        BinarySerachTree.prototype.remove = function (key) {
+            //1、寻找要删除的节点
+            //1.1 定义变量，保存一些信息
+            let current = this.root
+            let parent = this.root
+            let isLeftChild = true  //记录查找到的key， 是right还是left
+
+            //1.2 开始寻找删除的节点
+            while (current.key !== key) {
+                parent = current
+                if (key < current.key) { //向左查找
+                    isLeftChild = true
+                    current = current.left
+                } else if (key > current.key) { //向右查找
+                    isLeftChild = false
+                    current = current.right
+                }
+
+                if (current == null) {
+                    return false
+                }
+            }
+
+            //2、根据对应的情况删除节点
+            //2.1 删除的是叶子节点（没有子节点）
+            if (current.left == null && current.right == null) {
+                if (current === this.root) {  //删除根没有左子节点和右子节点
+                    this.root = null
+                } else if(isLeftChild) {
+                    parent.left = null
+                } else {
+                    parent.right = null
+                }
+            }
+
+            //2.2 删除的节点有一个子节点
+            else if (current.right == null) {
+                if (current === this.root) { //根节点右子节点为空
+                    this.root = current.left
+                } else if (isLeftChild) {
+                    parent.left = current.left
+                } else {
+                    parent.right = current.left
+                }
+            } else if (current.left == null) {
+                if (current === this.root) { //根节点左子节点为空
+                    this.root = current.right
+                } else if (isLeftChild) {
+                    parent.left = current.right
+                } else {
+                    parent.right = current.right
+                }
+            }
+
+            //比current小一点点的节点，称为current节点的前驱
+            //比current大一点点的节点，称为current节点的后继
+
+            //前驱：左子树的最大值
+            //后继：右子树的最小值
+
+            //2.3 删除的节点有两个子节点
+            else {
+                //1、获取后继节点
+                let successor = this.getSuccessor(current)
+
+                //2、判断是否根节点
+                if (current === this.root) {
+                    this.root = successor
+                } else if (isLeftChild) {
+                    parent.left = successor
+                } else {
+                    parent.right = successor
+                }
+
+                //3、将删除节点的左子树
+                successor.left = current.left
+            }
+        }
+
+        //找后继
+        BinarySerachTree.prototype.getSuccessor = function (delNode) {
+            //1、定义变量，保存找到的后继
+            let successorParent = delNode
+            let successor = delNode
+            let current = delNode.right
+
+
+            //2、循环查找
+            while (current != null) {
+                successorParent = successor  //最后一个节点的父节点
+                successor = current     //拿到最后一个节点的变量
+                current = current.left  //遍历条件，找到左子节点为null，遍历结束
+            }
+
+            //3、判断寻找的后继节点是否直接就是delNode的right节点
+            if (successor !== delNode.right) {
+                successorParent.left = successor.right
+                successor.right = delNode.right
+            }
+            return successor
+        }
+
+    }
+
+    let bt = new BinarySerachTree();
+    bt.insert(11)
+    bt.insert(7)
+    bt.insert(15)
+    bt.insert(5)
+    bt.insert(9)
+    bt.insert(13)
+    bt.insert(20)
+    bt.insert(3)
+    bt.insert(6)
+    bt.insert(8)
+    bt.insert(10)
+    bt.insert(12)
+    bt.insert(14)
+    bt.insert(18)
+    bt.insert(25)
+    console.log(bt)
+
+    //测试删除代码
+    bt.remove(18)
+    bt.remove(10)
+
+
+    let resultString = ""
+    bt.postOrderTraversal((key) => {
+        resultString += key + " "
+    })
+
+    console.log(resultString)
+
+</script>
+</body>
+</html>

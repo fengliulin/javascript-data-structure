@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //封装哈希表类
+    function HashMap() {
+        //属性
+        this.storage = []
+        this.count = 0   //记录元素个数
+        this.limit = 7   //哈希表初始长度
+
+        HashMap.prototype.hashCode = function (str, size) {
+            let hashCode = 0
+
+            //2、霍纳算法，来计算hashCode的值
+            // fengliulin => unicode编码
+            for (let i = 0; i < str.length; i++) {
+                hashCode = 37 * hashCode + str.charCodeAt(i)
+            }
+
+            //3、取余操作
+            let index = hashCode % size
+            return index
+        }
+        //插入和修改方法
+        HashMap.prototype.put = function (key, value) {
+            //1、根据key获取对应的下标
+            let index = this.hashCode(key, this.limit)
+
+            //2、根据index取出对应的bucket
+            let bucket = this.storage[index]  //取出对应的地址，返回一个数组类型
+
+            //3、判断该bucket是否为null
+            if (bucket == null) {
+                bucket = []
+                this.storage[index] = bucket
+            }
+
+            //4、判断是否是修改数据
+            for (let i = 0; i < bucket.length; i++) {
+                let tuple = bucket[i]  //数组里面存的key value，也是数组，所以返回是数组
+                if (tuple[0] === key) {
+                    tuple[1] = value
+                    return
+                }
+            }
+
+            //5、进行添加操作
+            bucket.push([key, value])
+            this.count++
+
+            //6、判断是否需要扩容操作
+            if (this.count > this.limit * 0.75) {
+                let newSize = this.limit * 2
+                let newPrime = this.getPrime(newSize)
+                this.resize(newPrime)
+            }
+        }
+
+        //获取操作
+        HashMap.prototype.get = function (key) {
+            //1、根据key获取对应的下标
+            let index = this.hashCode(key, this.limit)
+
+            //2、根据index获取对应的bucket
+            let bucket = this.storage[index]
+
+            //3、判断bucket是否为null
+            if (bucket == null) {
+                return null
+            }
+
+            //4、有bucket，那么就进行线性查找
+            for (let i = 0; i < bucket.length; i++) {
+                let tuple = bucket[i]
+                if (tuple[0] === key) {
+                    return tuple[1]
+                }
+            }
+
+            //5、依然没有找到，那么返回null
+            return null
+        }
+
+        //删除操作
+        HashMap.prototype.remove = function (key) {
+            //1、根据key获取对应的下标
+            let index = this.hashCode(key, this.limit)
+
+            //2、根据index获取对应的bucket
+            let bucket = this.storage[index]
+
+            //3、判断bucket是否为null
+            if (bucket == null) {
+                return null
+            }
+
+            //4、有bucket，那么就进行线性查找，并且删除
+            for (let i = 0; i < bucket.length; i++) {
+                let tuple = bucket[i]
+                if (tuple[0] === key) {
+                    bucket.splice(i, 1) //删除数组
+                    this.count--
+                    return tuple[1]
+                }
+
+                //缩小容量
+                if (this.limit > 7 && this.count < this.limit * 0.25) {
+                    let newSize = Math.floor(this.limit / 2)
+                    let newPrime = this.getPrime(newSize)
+                    this.resize(newPrime)
+                }
+            }
+
+            //5、依然没有找到，那么返回null
+            return null
+        }
+
+        //其他方法
+        //判断哈希表是否为null
+        HashMap.prototype.isEmpty = function () {
+            return this.count === 0
+        }
+
+        //获取哈希表中元素的个数
+        HashMap.prototype.size = function () {
+            return this.count
+        }
+
+        //哈希表的扩容
+        HashMap.prototype.resize = function (newLimit) {
+            //1、保存旧的数组内容
+            let oldStorage = this.storage
+
+            //2、重置所有的属性
+            this.storage = []
+            this.count = 0
+            this.limit = newLimit
+
+            //3、遍历oldStorage中所有的bucket
+            for (let i = 0; i < oldStorage.length; i++) {
+                //3、1 取出对应的bucket
+                let bucket = oldStorage[i]
+
+                //3、2 判断bucket是否为null
+                if (bucket == null) {
+                    continue
+                }
+
+                //3、3 bucket中有数据，那么取出数据，重新插入
+                for (let j = 0; j < bucket.length; j++) {
+                    let tuple = bucket[j]
+                    this.put(tuple[0], tuple[1])
+                }
+
+            }
+        }
+
+        //是否是质数
+        HashMap.prototype.isPrime = function (num) {
+                for (let i = 2; i < num; i++) {
+                    if (num % i === 0) {
+                        return false
+                    }
+                }
+                return true
+        }
+
+        //是否是质数
+        HashMap.prototype.getPrime = function (num) {
+            while (!this.isPrime(num)) {
+                num++
+            }
+            return num
+        }
+
+    }
+
+    let hashMap = new HashMap();
+    hashMap.put("张三","1")
+    hashMap.put("张三","123")
+    console.log(hashMap.get("张三"))
+</script>
+</body>
+</html>
